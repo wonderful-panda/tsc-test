@@ -1,0 +1,24 @@
+{
+  "name": "tsc-test",
+  "version": "0.0.1",
+  "description": "test TypeScript compilation. (Successfully compiled, or failed as expected)",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [
+    "TypeScript",
+    "test"
+  ],
+  "author": "Iwata Hidetaka",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^7.0.8",
+    "ava": "^0.18.2",
+    "typescript": "^2.1.1"
+  },
+  "peerDependencies": {
+    "typescript": ">=2.1.1"
+  }
+}
