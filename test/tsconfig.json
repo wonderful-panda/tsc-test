@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "dist",
+    "sourceMap": true,
+    "strictNullChecks": true
+  },
+  "files": [
+    "src/runner.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

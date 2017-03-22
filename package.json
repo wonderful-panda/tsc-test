@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "scripts": {
-    "test": "ava"
+    "test": "tsc -p test/tsconfig.json && ava test/dist/runner.js --verbose"
   },
   "keywords": [
     "TypeScript",
