@@ -76,8 +76,10 @@ ${ actualString.replace(/^/gm, "  ") }
  */
 export class Tester {
     service: ts.LanguageService;
+    baseDir: string;
 
     constructor(public compilerOptions: ts.CompilerOptions, public sources: string[], baseDir?: string) {
+        this.baseDir = baseDir || process.cwd();
         const host = {
             getScriptFileNames: () => sources,
             getScriptVersion: f => "0",
@@ -87,7 +89,7 @@ export class Tester {
                 }
                 return ts.ScriptSnapshot.fromString(fs.readFileSync(f).toString());
             },
-            getCurrentDirectory: () => baseDir || process.cwd(),
+            getCurrentDirectory: () => this.baseDir,
             getCompilationSettings: () => compilerOptions,
             getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
         };
@@ -102,6 +104,9 @@ export class Tester {
     }
 
     public test(fileName: string): Failure[] {
+        if (!path.isAbsolute(fileName)) {
+            fileName = path.normalize(path.join(this.baseDir, fileName));
+        }
         const expectedErrors = getExpectedErrors(fileName);
         const actualErrors = getActualErrors(fileName, this.service)
         const failures: Failure[] = [];
