@@ -78,7 +78,7 @@ export class Tester {
     service: ts.LanguageService;
 
     constructor(public compilerOptions: ts.CompilerOptions, public sources: string[], baseDir?: string) {
-        const host: ts.LanguageServiceHost = {
+        const host = {
             getScriptFileNames: () => sources,
             getScriptVersion: f => "0",
             getScriptSnapshot: f => {
@@ -89,7 +89,7 @@ export class Tester {
             },
             getCurrentDirectory: () => baseDir || process.cwd(),
             getCompilationSettings: () => compilerOptions,
-            getDefaultLibFileName: options => ts.getDefaultLibFileName(compilerOptions)
+            getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
         };
         this.service = ts.createLanguageService(host, ts.createDocumentRegistry());
     }
@@ -126,7 +126,7 @@ export class Tester {
     public testAll(onFail: (fileName: string, failures: Failure[]) => void): void {
         this.sources.forEach(fileName => {
             const failures = this.test(fileName);
-            if (failures) {
+            if (failures.length > 0) {
                 onFail(fileName, failures);
             }
         });
