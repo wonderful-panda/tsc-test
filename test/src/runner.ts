@@ -6,6 +6,10 @@ const baseDir = path.join(__dirname, "../testcases");
 const tsconfig = path.join(baseDir, "tsconfig.json");
 let tester: Tester;
 
+interface Foo {
+    foo: string;
+}
+
 test.before(t => {
     tester = Tester.fromConfigFile(tsconfig);
 });
@@ -17,6 +21,11 @@ test("expected 1 error", t => {
 
 test("expected 2 errors", t => {
     const failures = tester.test("expected-2-errors.ts");
+    t.true(failures.length === 0);
+});
+
+test("expected 1 error - specify error code only", t => {
+    const failures = tester.test("expected-1-error-codeonly.ts");
     t.true(failures.length === 0);
 });
 
@@ -37,3 +46,13 @@ test("unexpected 2 errors", t => {
     t.true(f2.line === 12 && f2.expected === undefined);
     t.true(f2.actual !== undefined && f2.actual.code === "TS2322");
 });
+
+test("unexpected 1 error - specify error code only", t => {
+    const failures = tester.test("unexpected-1-error-codeonly.ts");
+    t.true(failures.length === 1);
+    const f = failures[0];
+    t.true(f.line === 5);
+    t.true(f.expected !== undefined && f.expected.code === "TS0001");
+    t.true(f.actual !== undefined && f.actual.code === "TS2322");
+});
+

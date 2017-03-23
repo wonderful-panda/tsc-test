@@ -33,7 +33,7 @@ function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
     const lines = fs.readFileSync(file).toString().split(/\r?\n/);
     const ret: ExpectedError[] = [];
     lines.forEach((line, n) => {
-        const match = /\/\/\/\s*(TS[0-9]+)\s*:\s*(.*)$/.exec(line);
+        const match = /\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
         if (match) {
             ret[n] = { line: n, code: match[1], message: new RegExp(match[2]) };
         }
