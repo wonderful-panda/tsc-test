@@ -128,12 +128,15 @@ export class Tester {
         return failures;
     }
 
-    public testAll(onFail: (fileName: string, failures: Failure[]) => void): void {
+    public testAll(cb: (fileName: string, failures: Failure[]) => void): boolean {
+        let ret = true;
         this.sources.forEach(fileName => {
             const failures = this.test(fileName);
+            cb(fileName, failures);
             if (failures.length > 0) {
-                onFail(fileName, failures);
+                ret = false;
             }
         });
+        return false;
     }
 }
