@@ -76,18 +76,17 @@ ${ actualString.replace(/^/gm, "  ") }
  */
 export class Tester {
     service: ts.LanguageService;
-    baseDir: string;
 
-    constructor(public compilerOptions: ts.CompilerOptions, public sources: string[], baseDir?: string) {
-        this.baseDir = baseDir || process.cwd();
+    constructor(public compilerOptions: ts.CompilerOptions, public baseDir: string, public sources: string[]) {
         const host = {
             getScriptFileNames: () => sources,
             getScriptVersion: f => "0",
             getScriptSnapshot: f => {
-                if (!fs.existsSync(f)) {
+                const filePath = path.isAbsolute(f) ? f : path.join(this.baseDir, f);
+                if (!fs.existsSync(filePath)) {
                     return undefined;
                 }
-                return ts.ScriptSnapshot.fromString(fs.readFileSync(f).toString());
+                return ts.ScriptSnapshot.fromString(fs.readFileSync(filePath).toString());
             },
             getCurrentDirectory: () => this.baseDir,
             getCompilationSettings: () => compilerOptions,
@@ -96,18 +95,19 @@ export class Tester {
         this.service = ts.createLanguageService(host, ts.createDocumentRegistry());
     }
 
-    public static fromConfigFile(configPath: string, sources?: string[], baseDir?: string): Tester {
-        baseDir = baseDir || path.dirname(configPath);
+    public static fromConfigFile(configPath: string, baseDir?: string, sources?: string[]): Tester {
+        const baseDir_ = baseDir || path.dirname(configPath);
         const content = fs.readFileSync(configPath).toString();
-        const parsed = ts.parseJsonConfigFileContent(JSON.parse(content), ts.sys, baseDir);
-        return new Tester(parsed.options,  sources || parsed.fileNames, baseDir);
+        const parsed = ts.parseJsonConfigFileContent(JSON.parse(content), ts.sys, baseDir_);
+        if (!sources) {
+            sources = parsed.fileNames.map(fn => path.isAbsolute(fn) ? fn : path.relative(baseDir_, fn));
+        }
+        return new Tester(parsed.options, baseDir_, sources);
     }
 
     public test(fileName: string): Failure[] {
-        if (!path.isAbsolute(fileName)) {
-            fileName = path.normalize(path.join(this.baseDir, fileName));
-        }
-        const expectedErrors = getExpectedErrors(fileName);
+        const filePath = path.isAbsolute(fileName) ? fileName : path.join(this.baseDir, fileName);
+        const expectedErrors = getExpectedErrors(filePath);
         const actualErrors = getActualErrors(fileName, this.service)
         const failures: Failure[] = [];
         for (let i = 0; i < expectedErrors.length || i < actualErrors.length; ++i) {
