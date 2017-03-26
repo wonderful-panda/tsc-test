@@ -6,7 +6,6 @@ import * as path from "path";
  * Expected compilation error.
  */
 export interface ExpectedError {
-    line: number;
     code: string;
     message?: RegExp;
 }
@@ -15,7 +14,6 @@ export interface ExpectedError {
  * Actual compilation error.
  */
 export interface ActualError {
-    line: number;
     code: string;
     message?: string;
 }
@@ -35,7 +33,7 @@ function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
     lines.forEach((line, n) => {
         const match = /\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
         if (match) {
-            ret[n] = { line: n, code: match[1], message: new RegExp(match[2]) };
+            ret[n] = { code: match[1], message: new RegExp(match[2]) };
         }
     });
     return ret;
@@ -46,7 +44,7 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
     service.getSemanticDiagnostics(file).forEach(d => {
         const { line, character } = d.file.getLineAndCharacterOfPosition(d.start);
         const message = ts.flattenDiagnosticMessageText(d.messageText, "\n");
-        errors[line] = { line, code: `TS${d.code}`, message };
+        errors[line] = { code: `TS${d.code}`, message };
     });
     return errors;
 }
@@ -56,8 +54,8 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
  */
 export function formatFailureMessage(failure: Failure) {
     let { line, expected, actual } = failure;
-    expected = expected || { line, code: "<no error>" };
-    actual = actual || { line, code: "<no error>" };
+    expected = expected || { code: "<no error>" };
+    actual = actual || { code: "<no error>" };
     const expectedString = expected.message ? `${ expected.code }: ${ expected.message }` : expected.code;
     const actualString = actual.message ? `${ actual.code }: ${ actual.message }` : actual.code;
 
