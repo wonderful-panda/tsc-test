@@ -3,7 +3,6 @@ import * as ts from "typescript/lib/typescript";
  * Expected compilation error.
  */
 export interface ExpectedError {
-    line: number;
     code: string;
     message?: RegExp;
 }
@@ -11,7 +10,6 @@ export interface ExpectedError {
  * Actual compilation error.
  */
 export interface ActualError {
-    line: number;
     code: string;
     message?: string;
 }
@@ -22,6 +20,7 @@ export interface Failure {
     line: number;
     expected?: ExpectedError;
     actual?: ActualError;
+    detail: string;
 }
 /**
  * Format failure object for pretty-print
@@ -32,11 +31,11 @@ export declare function formatFailureMessage(failure: Failure): string;
  */
 export declare class Tester {
     compilerOptions: ts.CompilerOptions;
+    baseDir: string;
     sources: string[];
     service: ts.LanguageService;
-    baseDir: string;
-    constructor(compilerOptions: ts.CompilerOptions, sources: string[], baseDir?: string);
-    static fromConfigFile(configPath: string, sources?: string[], baseDir?: string): Tester;
+    constructor(compilerOptions: ts.CompilerOptions, baseDir: string, sources: string[]);
+    static fromConfigFile(configPath: string, baseDir?: string, sources?: string[]): Tester;
     test(fileName: string): Failure[];
-    testAll(onFail: (fileName: string, failures: Failure[]) => void): void;
+    testAll(cb: (fileName: string, failures: Failure[]) => void): boolean;
 }
