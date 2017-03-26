@@ -25,6 +25,31 @@ export interface Failure {
     line: number;
     expected?: ExpectedError;
     actual?: ActualError;
+    detail: string;
+}
+
+/**
+ * Judge actual error satisfies expected error or not.
+ */
+function judge(line: number, expected: ExpectedError|undefined, actual: ActualError|undefined): Failure|undefined {
+    if (typeof expected === "undefined" || typeof actual === "undefined") {
+        if (expected) {
+            return { line, expected, actual, detail: "unexpected success" };
+        }
+        else if (actual) {
+            return { line, expected, actual, detail: "unexpected error" };
+        }
+        else {
+            return undefined;
+        }
+    }
+    else if (expected.code !== actual.code) {
+        return { line, expected, actual, detail: "unexpected error code" };
+    }
+    else if (expected.message && actual.message && !expected.message.test(actual.message)) {
+        return { line, expected, actual, detail: "unexpected error message" };
+    }
+    return undefined;
 }
 
 function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
@@ -111,16 +136,9 @@ export class Tester {
         for (let i = 0; i < expectedErrors.length || i < actualErrors.length; ++i) {
             const expected = expectedErrors[i];
             const actual = actualErrors[i];
-            if (typeof expected === "undefined" || typeof actual === "undefined") {
-                if (typeof expected !== typeof actual) {
-                    failures.push({ line: i, expected, actual });
-                }
-            }
-            else if (expected.code !== actual.code) {
-                failures.push({ line: i, expected, actual });
-            }
-            else if (expected.message && actual.message && !expected.message.test(actual.message)) {
-                failures.push({ line: i, expected, actual });
+            const failure = judge(i, expected, actual);
+            if (failure) {
+                failures.push(failure);
             }
         }
         return failures;
