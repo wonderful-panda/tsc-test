@@ -7,7 +7,7 @@ import * as path from "path";
  */
 export interface ExpectedError {
     code: string;
-    message?: RegExp;
+    message?: RegExp|string;
 }
 
 /**
@@ -46,10 +46,33 @@ function judge(line: number, expected: ExpectedError|undefined, actual: ActualEr
     else if (expected.code !== actual.code) {
         return { line, expected, actual, detail: "unexpected error code" };
     }
-    else if (expected.message && actual.message && !expected.message.test(actual.message)) {
-        return { line, expected, actual, detail: "unexpected error message" };
+    else if (expected.message && actual.message) {
+        if (expected.message instanceof RegExp) {
+            if (!expected.message.test(actual.message)) {
+                return { line, expected, actual, detail: "unexpected error message" };
+            }
+        }
+        else {
+            // expected.message is string
+            if (actual.message.indexOf(expected.message) < 0) {
+                return { line, expected, actual, detail: "unexpected error message" };
+            }
+        }
     }
     return undefined;
+}
+
+function parseExpectedErrorMessage(detail?: string): RegExp|string {
+    if (!detail) {
+        return "";
+    }
+    const match = /^\/(.*)\/([a-z]*)\s*$/.exec(detail)
+    if (match) {
+        return new RegExp(match[1], match[2]);
+    }
+    else {
+        return detail;
+    }
 }
 
 function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
@@ -58,7 +81,7 @@ function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
     lines.forEach((line, n) => {
         const match = /\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
         if (match) {
-            ret[n] = { code: match[1], message: new RegExp(match[2]) };
+            ret[n] = { code: match[1], message: parseExpectedErrorMessage(match[2]) };
         }
     });
     return ret;

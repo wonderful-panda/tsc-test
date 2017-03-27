@@ -28,7 +28,7 @@ Testing TypeScript compilation (should succeed or should fail)
 2. put files to be tested into test directory.
 
     ```typescript
-    // should-be-compiled.ts
+    // should-succeed.ts
 
     interface Foo { foo: string; }
 
@@ -40,7 +40,7 @@ Testing TypeScript compilation (should succeed or should fail)
    When compilation errors should be occurred, write error code inline after 4 slashes(`////`).
 
     ```typescript
-    // should-be-failed.ts
+    // should-fail-1.ts
 
     interface Foo { foo: string; }
 
@@ -52,7 +52,7 @@ Testing TypeScript compilation (should succeed or should fail)
    You can write part of error message after error code. (with colon)
 
     ```typescript
-    // should-be-failed-2.ts
+    // should-fail-2.ts
 
     interface Foo { foo: string; }
 
@@ -61,10 +61,42 @@ Testing TypeScript compilation (should succeed or should fail)
     }
     ```
 
+    Or regular expression.
+
+    ```typescript
+    // should-fail-3.ts (but this code is not wrong acturally ...)
+
+    interface Foo { foo: string; }
+
+    export function test(foo: Foo) {
+        console.log(foo.foo);       //// TS2339: /property .* does not exist/i
+    }
+    ```
+
+
 3. run `tsc-test` command
 
     ```
     $ tsc-test -p test/tsconfig.json
+    ```
+
+    And you will get output like below:
+
+    ```
+    OK: should-fail-1.ts
+    OK: should-fail-2.ts
+    NG: should-fail-3.ts
+    OK: should-succeed.ts
+
+    ================================================================
+    should-fail-3.ts
+
+    At line 6
+    -----------
+    [expected]
+      TS2339: /property .* does not exist/i
+    [actual]
+      <no error>
     ```
 
 ## Run with test runner

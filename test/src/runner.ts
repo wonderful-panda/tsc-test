@@ -48,3 +48,25 @@ test("unexpected 1 error - specify error code only", t => {
     t.true(f.actual !== undefined && f.actual.code === "TS2322");
 });
 
+test("expected success", t => {
+    const failures = tester.test("expected-success.ts");
+    t.true(failures.length === 0);
+});
+
+test("unexpected success", t => {
+    const failures = tester.test("unexpected-success.ts");
+    t.true(failures.length === 3);
+    const [ f1, f2, f3 ] = failures;
+    t.true(f1.line === 5);
+    t.true(f1.expected !== undefined && f1.expected.code === "TS2324");
+    t.true(f1.actual === undefined);
+
+    t.true(f2.line === 10);
+    t.true(f2.expected !== undefined && f2.expected.code === "TS2322");
+    t.true(f2.actual === undefined);
+
+    t.true(f3.line === 11);
+    t.true(f3.expected !== undefined && f3.expected.code === "TS2322");
+    t.true(f3.actual === undefined);
+});
+
