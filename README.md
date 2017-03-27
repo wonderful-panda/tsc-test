@@ -1,9 +1,6 @@
 # tsc-test
 
-Test library for TypeScript compilation.
-
-`tsc-test` makes enable to test result of `tsc`.
-This tests that TypeScript compilation will pass/fail as expected.
+Testing TypeScript compilation (should succeed or should fail)
 
 ## Basic usage
 
@@ -69,3 +66,28 @@ This tests that TypeScript compilation will pass/fail as expected.
     ```
     $ tsc-test -p test/tsconfig.json
     ```
+
+## Run with test runner
+
+### ava
+
+    ```typescript
+    // runner.ts
+
+    import test from "ava";
+    import { Tester, formatFailureMessage } from "tsc-test";
+
+    const tester = Tester.fromConfig("<path to tsconfig.json>");
+    tester.sources.forEach(fileName => {
+        test(fileName, t => {
+            const failures = tester.test(fileName);
+            if (failures.length > 0) {
+                t.fail(formatFailureMessage(...failures));
+            }
+        })
+    });
+    ```
+
+## License
+MIT
+
