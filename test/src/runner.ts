@@ -4,15 +4,7 @@ import { Tester, formatFailureMessage } from "../..";
 
 const baseDir = path.join(__dirname, "../testcases");
 const tsconfig = path.join(baseDir, "tsconfig.json");
-let tester: Tester;
-
-interface Foo {
-    foo: string;
-}
-
-test.before(t => {
-    tester = Tester.fromConfigFile(tsconfig);
-});
+const tester = Tester.fromConfigFile(tsconfig);
 
 test("expected 1 error", t => {
     const failures = tester.test("expected-1-error.ts");

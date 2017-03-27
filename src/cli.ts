@@ -32,7 +32,7 @@ const allSucceeded = tester.testAll((fileName, failures) => {
     const succeeded = failures.length === 0;
     console.info(`${ succeeded ? "OK" : "NG" }: ${fileName}`);
     if (!succeeded) {
-        failureDetails.push("", separator, fileName, "", ...failures.map(formatFailureMessage));
+        failureDetails.push("", separator, fileName, "", formatFailureMessage(...failures));
     }
 });
 

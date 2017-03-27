@@ -77,14 +77,15 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
 /**
  * Format failure object for pretty-print
  */
-export function formatFailureMessage(failure: Failure) {
-    let { line, expected, actual } = failure;
-    expected = expected || { code: "<no error>" };
-    actual = actual || { code: "<no error>" };
-    const expectedString = expected.message ? `${ expected.code }: ${ expected.message }` : expected.code;
-    const actualString = actual.message ? `${ actual.code }: ${ actual.message }` : actual.code;
-
-    return (
+export function formatFailureMessage(...failures: Failure[]) {
+    const ret: string[] = [];
+    failures.forEach(failure => {
+        let { line, expected, actual } = failure;
+        expected = expected || { code: "<no error>" };
+        actual = actual || { code: "<no error>" };
+        const expectedString = expected.message ? `${ expected.code }: ${ expected.message }` : expected.code;
+        const actualString = actual.message ? `${ actual.code }: ${ actual.message }` : actual.code;
+        ret.push(
 `At line ${line + 1}
 -----------
 [expected]
@@ -92,6 +93,8 @@ ${ expectedString.replace(/^/gm, "  ") }
 [actual]
 ${ actualString.replace(/^/gm, "  ") }
 `);
+    });
+    return ret.join("\n");
 }
 
 /**
