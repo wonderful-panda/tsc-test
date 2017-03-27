@@ -25,7 +25,7 @@ export interface Failure {
 /**
  * Format failure object for pretty-print
  */
-export declare function formatFailureMessage(failure: Failure): string;
+export declare function formatFailureMessage(...failures: Failure[]): string;
 /**
  * Tester object
  */
