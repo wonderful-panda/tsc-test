@@ -71,22 +71,22 @@ Testing TypeScript compilation (should succeed or should fail)
 
 ### ava
 
-    ```typescript
-    // runner.ts
+```typescript
+// runner.ts
 
-    import test from "ava";
-    import { Tester, formatFailureMessage } from "tsc-test";
+import test from "ava";
+import { Tester, formatFailureMessage } from "tsc-test";
 
-    const tester = Tester.fromConfig("<path to tsconfig.json>");
-    tester.sources.forEach(fileName => {
-        test(fileName, t => {
-            const failures = tester.test(fileName);
-            if (failures.length > 0) {
-                t.fail(formatFailureMessage(...failures));
-            }
-        })
-    });
-    ```
+const tester = Tester.fromConfig("<path to tsconfig.json>");
+tester.sources.forEach(fileName => {
+    test(fileName, t => {
+        const failures = tester.test(fileName);
+        if (failures.length > 0) {
+            t.fail(formatFailureMessage(...failures));
+        }
+    })
+});
+```
 
 ## License
 MIT
