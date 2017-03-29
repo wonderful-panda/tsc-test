@@ -6,23 +6,27 @@ const baseDir = path.join(__dirname, "../testcases");
 const tsconfig = path.join(baseDir, "tsconfig.json");
 const tester = Tester.fromConfigFile(tsconfig);
 
+function testTsFile(fileName: string) {
+    return tester.test(path.join(baseDir, fileName));
+}
+
 test("expected 1 error", t => {
-    const failures = tester.test("expected-1-error.ts");
+    const failures = testTsFile("expected-1-error.ts");
     t.true(failures.length === 0);
 });
 
 test("expected 2 errors", t => {
-    const failures = tester.test("expected-2-errors.ts");
+    const failures = testTsFile("expected-2-errors.ts");
     t.true(failures.length === 0);
 });
 
 test("expected 1 error - specify error code only", t => {
-    const failures = tester.test("expected-1-error-codeonly.ts");
+    const failures = testTsFile("expected-1-error-codeonly.ts");
     t.true(failures.length === 0);
 });
 
 test("unexpected 1 error", t => {
-    const failures = tester.test("unexpected-1-error.ts");
+    const failures = testTsFile("unexpected-1-error.ts");
     t.true(failures.length === 1);
     const f = failures[0];
     t.true(f.line === 5 && f.expected === undefined);
@@ -30,7 +34,7 @@ test("unexpected 1 error", t => {
 });
 
 test("unexpected 2 errors", t => {
-    const failures = tester.test("unexpected-2-errors.ts");
+    const failures = testTsFile("unexpected-2-errors.ts");
     t.true(failures.length === 2);
     const [ f1, f2 ] = failures;
     t.true(f1.line === 10 && f1.expected === undefined);
@@ -40,7 +44,7 @@ test("unexpected 2 errors", t => {
 });
 
 test("unexpected 1 error - specify error code only", t => {
-    const failures = tester.test("unexpected-1-error-codeonly.ts");
+    const failures = testTsFile("unexpected-1-error-codeonly.ts");
     t.true(failures.length === 1);
     const f = failures[0];
     t.true(f.line === 5);
@@ -49,12 +53,12 @@ test("unexpected 1 error - specify error code only", t => {
 });
 
 test("expected success", t => {
-    const failures = tester.test("expected-success.ts");
+    const failures = testTsFile("expected-success.ts");
     t.true(failures.length === 0);
 });
 
 test("unexpected success", t => {
-    const failures = tester.test("unexpected-success.ts");
+    const failures = testTsFile("unexpected-success.ts");
     t.true(failures.length === 3);
     const [ f1, f2, f3 ] = failures;
     t.true(f1.line === 5);
