@@ -31,11 +31,10 @@ export declare function formatFailureMessage(...failures: Failure[]): string;
  */
 export declare class Tester {
     compilerOptions: ts.CompilerOptions;
-    baseDir: string;
     sources: string[];
     service: ts.LanguageService;
-    constructor(compilerOptions: ts.CompilerOptions, baseDir: string, sources: string[]);
-    static fromConfigFile(configPath: string, baseDir?: string, sources?: string[]): Tester;
+    constructor(compilerOptions: ts.CompilerOptions, sources: string[]);
+    static fromConfigFile(configPath: string, sources?: string[]): Tester;
     test(fileName: string): Failure[];
     testAll(cb: (fileName: string, failures: Failure[]) => void): boolean;
 }
