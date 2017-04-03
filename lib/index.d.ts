@@ -23,13 +23,13 @@ export interface Failure {
     detail: string;
 }
 /**
+ * For internal use
+ */
+export declare function formatError(error: ExpectedError | ActualError | undefined, title: string, titleColor?: ((s: string) => string), detailColor?: ((s: string) => string)): string;
+/**
  * Format failure object for pretty-print
  */
 export declare function formatFailureMessage(...failures: Failure[]): string;
-/**
- * For internal use
- */
-export declare function formatResultForCli(fileName: string, failures: Failure[]): string;
 /**
  * Tester object
  */
