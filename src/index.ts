@@ -29,9 +29,6 @@ export interface Failure {
     detail: string;
 }
 
-/**
- * Judge actual error satisfies expected error or not.
- */
 function judge(line: number, expected: ExpectedError|undefined, actual: ActualError|undefined): Failure|undefined {
     if (typeof expected === "undefined" || typeof actual === "undefined") {
         if (expected) {
@@ -98,8 +95,11 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
     return errors;
 }
 
-function formatError(error: ExpectedError | ActualError | undefined, title: string,
-                     titleColor?: ((s: string) => string), detailColor?: ((s: string) => string)): string {
+/**
+ * For internal use
+ */
+export function formatError(error: ExpectedError | ActualError | undefined, title: string,
+                            titleColor?: ((s: string) => string), detailColor?: ((s: string) => string)): string {
     let indent = "                ";
     while (indent.length < title.length) {
         indent += indent;
@@ -107,9 +107,9 @@ function formatError(error: ExpectedError | ActualError | undefined, title: stri
     indent = indent.substr(0, title.length);
     const tc = titleColor || colors.none;
     const dc = detailColor || colors.none;
+    const err = error || { code: "<no error>" };
 
-    error = error || { code: "<no error>" };
-    const text = error.message ? `${ error.code }: ${ error.message }` : error.code;
+    const text = err.message ? `${ err.code }: ${ err.message }` : err.code;
     return text.replace(/^(.*)$/gm, (_, content, offset) => {
         return (offset == 0 ? tc(title) : indent) + dc(content);
     });
@@ -124,20 +124,6 @@ export function formatFailureMessage(...failures: Failure[]): string {
         ret.push(`At line.${ failure.line + 1 }`);
         ret.push(formatError(failure.expected, "  expected: "));
         ret.push(formatError(failure.actual,   "  but was:  "));
-    });
-    return ret.join("\n");
-}
-
-/**
- * For internal use
- */
-export function formatResultForCli(fileName: string, failures: Failure[]): string {
-    const ret: string[] = [];
-    failures.forEach(failure => {
-        ret.push(colors.title(`${ fileName }:${ failure.line + 1 }`));
-        ret.push(formatError(failure.expected, "  expected: ", colors.errorTitle, colors.errorDetail));
-        ret.push(formatError(failure.actual,   "  but was:  ", colors.errorTitle, colors.errorDetail));
-        ret.push("");
     });
     return ret.join("\n");
 }

@@ -2,7 +2,7 @@
 
 import * as meow from "meow";
 import * as path from "path";
-import { Tester, formatResultForCli, Failure } from "./index";
+import { Tester, Failure, formatError } from "./index";
 import { colors } from "./colors";
 
 const cli = meow(`
@@ -27,13 +27,24 @@ const cli = meow(`
     }
 });
 
+function formatFailures(fileName: string, failures: Failure[]): string {
+    const ret: string[] = [];
+    failures.forEach(failure => {
+        ret.push(colors.title(`${ fileName }:${ failure.line + 1 }`));
+        ret.push(formatError(failure.expected, "  expected: ", colors.errorTitle, colors.errorDetail));
+        ret.push(formatError(failure.actual,   "  but was:  ", colors.errorTitle, colors.errorDetail));
+        ret.push("");
+    });
+    return ret.join("\n");
+}
+
 const tester = Tester.fromConfigFile(cli.flags.project);
 const failureDetails: string[] = [];
 const allSucceeded = tester.testAll((fileName, failures) => {
     const succeeded = failures.length === 0;
     console.info(`${ succeeded ? colors.pass("OK") : colors.error("NG") }: ${fileName}`);
     if (!succeeded) {
-        failureDetails.push(formatResultForCli(fileName, failures));
+        failureDetails.push(formatFailures(fileName, failures));
     }
 });
 
