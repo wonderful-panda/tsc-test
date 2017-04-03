@@ -27,6 +27,10 @@ export interface Failure {
  */
 export declare function formatFailureMessage(...failures: Failure[]): string;
 /**
+ * For internal use
+ */
+export declare function formatResultForCli(fileName: string, failures: Failure[]): string;
+/**
  * Tester object
  */
 export declare class Tester {
