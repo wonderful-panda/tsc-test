@@ -2,7 +2,8 @@
 
 import * as meow from "meow";
 import * as path from "path";
-import { Tester, formatFailureMessage, Failure } from "./index";
+import { Tester, formatResultForCli, Failure } from "./index";
+import { colors } from "./colors";
 
 const cli = meow(`
     Usage
@@ -10,6 +11,7 @@ const cli = meow(`
 
     Options
       --project, -p     TypeScript configuration file
+      --no-color        Disable color output
 
     Example
       $ tsc-test -p test/tsconfig.json
@@ -27,12 +29,11 @@ const cli = meow(`
 
 const tester = Tester.fromConfigFile(cli.flags.project);
 const failureDetails: string[] = [];
-const separator = "================================================================";
 const allSucceeded = tester.testAll((fileName, failures) => {
     const succeeded = failures.length === 0;
-    console.info(`${ succeeded ? "OK" : "NG" }: ${fileName}`);
+    console.info(`${ succeeded ? colors.pass("OK") : colors.error("NG") }: ${fileName}`);
     if (!succeeded) {
-        failureDetails.push("", separator, fileName, "", formatFailureMessage(...failures));
+        failureDetails.push(formatResultForCli(fileName, failures));
     }
 });
 
@@ -40,7 +41,7 @@ if (allSucceeded) {
     process.exit(0);
 }
 else {
-    console.error(failureDetails.join("\n"));
+    console.error("\n" + failureDetails.join("\n"));
     process.exit(1);
 }
 

@@ -1,6 +1,7 @@
 import * as ts from "typescript/lib/typescript";
 import * as fs from "fs";
 import * as path from "path";
+import { colors } from "./colors";
 
 /**
  * Expected compilation error.
@@ -97,25 +98,46 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
     return errors;
 }
 
+function formatError(error: ExpectedError | ActualError | undefined, title: string,
+                     titleColor?: ((s: string) => string), detailColor?: ((s: string) => string)): string {
+    let indent = "                ";
+    while (indent.length < title.length) {
+        indent += indent;
+    }
+    indent = indent.substr(0, title.length);
+    const tc = titleColor || colors.none;
+    const dc = detailColor || colors.none;
+
+    error = error || { code: "<no error>" };
+    const text = error.message ? `${ error.code }: ${ error.message }` : error.code;
+    return text.replace(/^(.*)$/gm, (_, content, offset) => {
+        return (offset == 0 ? tc(title) : indent) + dc(content);
+    });
+}
+
 /**
  * Format failure object for pretty-print
  */
-export function formatFailureMessage(...failures: Failure[]) {
+export function formatFailureMessage(...failures: Failure[]): string {
     const ret: string[] = [];
     failures.forEach(failure => {
-        let { line, expected, actual } = failure;
-        expected = expected || { code: "<no error>" };
-        actual = actual || { code: "<no error>" };
-        const expectedString = expected.message ? `${ expected.code }: ${ expected.message }` : expected.code;
-        const actualString = actual.message ? `${ actual.code }: ${ actual.message }` : actual.code;
-        ret.push(
-`At line ${line + 1}
------------
-[expected]
-${ expectedString.replace(/^/gm, "  ") }
-[actual]
-${ actualString.replace(/^/gm, "  ") }
-`);
+        ret.push(`At line.${ failure.line + 1 }`);
+        ret.push(formatError(failure.expected, "  expected: "));
+        ret.push(formatError(failure.actual,   "  but was:  "));
+    });
+    return ret.join("\n");
+}
+
+/**
+ * For internal use
+ */
+export function formatResultForCli(fileName: string, failures: Failure[]): string {
+    const ret: string[] = [];
+    failures.forEach(failure => {
+        ret.push(colors.title(`${ fileName }:${ failure.line + 1 }`));
+        ret.push(formatError(failure.expected, "  expected: ", colors.errorTitle, colors.errorDetail));
+        ret.push(formatError(failure.actual,   "  but was:  ", colors.errorTitle, colors.errorDetail));
+        ret.push("");
     });
     return ret.join("\n");
 }

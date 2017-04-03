@@ -83,20 +83,14 @@ Testing TypeScript compilation (should succeed or should fail)
     And you will get output like below:
 
     ```
-    OK: should-fail-1.ts
-    OK: should-fail-2.ts
-    NG: should-fail-3.ts
-    OK: should-succeed.ts
+    OK: test/should-fail-1.ts
+    OK: test/should-fail-2.ts
+    NG: test/should-fail-3.ts
+    OK: test/should-succeed.ts
 
-    ================================================================
-    should-fail-3.ts
-
-    At line 6
-    -----------
-    [expected]
-      TS2339: /property .* does not exist/i
-    [actual]
-      <no error>
+    test/should-fail-3.ts:6
+      expected: TS2339: /property .* does not exist/i
+      bat was:  <no error>
     ```
 
 ## Run with test runner
