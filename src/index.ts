@@ -181,6 +181,6 @@ export class Tester {
                 ret = false;
             }
         });
-        return false;
+        return ret;
     }
 }
