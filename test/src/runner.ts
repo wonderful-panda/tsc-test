@@ -74,3 +74,8 @@ test("unexpected success", t => {
     t.true(f3.actual === undefined);
 });
 
+test("import modules", t => {
+    const failures = testTsFile("import.ts");
+    t.true(failures.length === 0);
+});
+

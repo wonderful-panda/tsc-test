@@ -138,7 +138,7 @@ export class Tester {
     service: ts.LanguageService;
 
     constructor(public compilerOptions: ts.CompilerOptions, public sources: string[]) {
-        const host = {
+        const host: ts.LanguageServiceHost = {
             getScriptFileNames: () => sources,
             getScriptVersion: f => "0",
             getScriptSnapshot: f => {
@@ -150,6 +150,17 @@ export class Tester {
             getCurrentDirectory: () => process.cwd(),
             getCompilationSettings: () => compilerOptions,
             getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
+            resolveModuleNames: (moduleNames, containingFile) => {
+                const resolutionHost = { fileExists: ts.sys.fileExists, readFile: ts.sys.readFile };
+                const ret = [] as ts.ResolvedModule[];
+                moduleNames.forEach(name => {
+                    const resolved = ts.resolveModuleName(name, containingFile, compilerOptions, resolutionHost).resolvedModule;
+                    if (resolved !== undefined) {
+                        ret.push(resolved);
+                    }
+                });
+                return ret;
+            }
         };
         this.service = ts.createLanguageService(host, ts.createDocumentRegistry());
     }
