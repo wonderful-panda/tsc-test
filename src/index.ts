@@ -88,7 +88,10 @@ function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
 function getActualErrors(file: string, service: ts.LanguageService): (ActualError|undefined)[] {
     const errors: ActualError[] = [];
     service.getSemanticDiagnostics(file).forEach(d => {
-        const { line, character } = d.file.getLineAndCharacterOfPosition(d.start);
+        let line = -1;
+        if (d.file && d.start !== undefined) {
+            line = d.file.getLineAndCharacterOfPosition(d.start).line;
+        }
         const message = ts.flattenDiagnosticMessageText(d.messageText, "\n");
         errors[line] = { code: `TS${d.code}`, message };
     });
