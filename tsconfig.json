@@ -5,7 +5,8 @@
     "outDir": "lib",
     "sourceMap": true,
     "strictNullChecks": true,
-    "declaration": true
+    "declaration": true,
+    "newLine": "lf"
   },
   "filesGlob": [
     "src/**/*.ts"

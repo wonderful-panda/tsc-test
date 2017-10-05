@@ -1,1 +1,4 @@
+* text=auto
+lib/*.js eol=lf
+lib/*.d.ts eol=lf
 *.json eol=lf
