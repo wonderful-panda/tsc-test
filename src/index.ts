@@ -78,7 +78,7 @@ function getExpectedErrors(file: string): (ExpectedError | undefined)[] {
         .split(/\r?\n/);
     const ret: ExpectedError[] = [];
     lines.forEach((line, n) => {
-        const match = /\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
+        const match = /\/\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
         if (match) {
             ret[n] = { code: match[1], message: parseExpectedErrorMessage(match[2]) };
         }
