@@ -7,7 +7,7 @@
   "bin": "lib/cli.js",
   "scripts": {
     "build": "tsc",
-    "build:test": "tsc -p test/tsconfig.json",
+    "pretest": "tsc -p test/tsconfig.json",
     "test": "ava test/dist/runner.js --verbose"
   },
   "keywords": [
@@ -28,5 +28,10 @@
   "dependencies": {
     "chalk": "^1.1.3",
     "meow": "^3.7.0"
+  },
+  "ava": {
+    "source": [
+      "test/testcases/*.*"
+    ]
   }
 }
