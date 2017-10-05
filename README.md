@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/wonderful-panda/tsc-test.svg?branch=master)](https://travis-ci.org/wonderful-panda/tsc-test)
+
 # tsc-test
 
 Testing TypeScript compilation (should succeed or should fail)
