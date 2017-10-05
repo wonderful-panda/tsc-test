@@ -8,7 +8,7 @@ import { colors } from "./colors";
  */
 export interface ExpectedError {
     code: string;
-    message?: RegExp|string;
+    message?: RegExp | string;
 }
 
 /**
@@ -29,28 +29,27 @@ export interface Failure {
     detail: string;
 }
 
-function judge(line: number, expected: ExpectedError|undefined, actual: ActualError|undefined): Failure|undefined {
+function judge(
+    line: number,
+    expected: ExpectedError | undefined,
+    actual: ActualError | undefined
+): Failure | undefined {
     if (typeof expected === "undefined" || typeof actual === "undefined") {
         if (expected) {
             return { line, expected, actual, detail: "unexpected success" };
-        }
-        else if (actual) {
+        } else if (actual) {
             return { line, expected, actual, detail: "unexpected error" };
-        }
-        else {
+        } else {
             return undefined;
         }
-    }
-    else if (expected.code !== actual.code) {
+    } else if (expected.code !== actual.code) {
         return { line, expected, actual, detail: "unexpected error code" };
-    }
-    else if (expected.message && actual.message) {
+    } else if (expected.message && actual.message) {
         if (expected.message instanceof RegExp) {
             if (!expected.message.test(actual.message)) {
                 return { line, expected, actual, detail: "unexpected error message" };
             }
-        }
-        else {
+        } else {
             // expected.message is string
             if (actual.message.indexOf(expected.message) < 0) {
                 return { line, expected, actual, detail: "unexpected error message" };
@@ -60,21 +59,23 @@ function judge(line: number, expected: ExpectedError|undefined, actual: ActualEr
     return undefined;
 }
 
-function parseExpectedErrorMessage(detail?: string): RegExp|string {
+function parseExpectedErrorMessage(detail?: string): RegExp | string {
     if (!detail) {
         return "";
     }
-    const match = /^\/(.*)\/([a-z]*)\s*$/.exec(detail)
+    const match = /^\/(.*)\/([a-z]*)\s*$/.exec(detail);
     if (match) {
         return new RegExp(match[1], match[2]);
-    }
-    else {
+    } else {
         return detail;
     }
 }
 
-function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
-    const lines = fs.readFileSync(file).toString().split(/\r?\n/);
+function getExpectedErrors(file: string): (ExpectedError | undefined)[] {
+    const lines = fs
+        .readFileSync(file)
+        .toString()
+        .split(/\r?\n/);
     const ret: ExpectedError[] = [];
     lines.forEach((line, n) => {
         const match = /\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
@@ -85,7 +86,7 @@ function getExpectedErrors(file: string): (ExpectedError|undefined)[] {
     return ret;
 }
 
-function getActualErrors(file: string, service: ts.LanguageService): (ActualError|undefined)[] {
+function getActualErrors(file: string, service: ts.LanguageService): (ActualError | undefined)[] {
     const errors: ActualError[] = [];
     service.getSemanticDiagnostics(file).forEach(d => {
         let line = -1;
@@ -101,8 +102,12 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
 /**
  * For internal use
  */
-export function formatError(error: ExpectedError | ActualError | undefined, title: string,
-                            titleColor?: ((s: string) => string), detailColor?: ((s: string) => string)): string {
+export function formatError(
+    error: ExpectedError | ActualError | undefined,
+    title: string,
+    titleColor?: ((s: string) => string),
+    detailColor?: ((s: string) => string)
+): string {
     let indent = "                ";
     while (indent.length < title.length) {
         indent += indent;
@@ -112,7 +117,7 @@ export function formatError(error: ExpectedError | ActualError | undefined, titl
     const dc = detailColor || colors.none;
     const err = error || { code: "<no error>" };
 
-    const text = err.message ? `${ err.code }: ${ err.message }` : err.code;
+    const text = err.message ? `${err.code}: ${err.message}` : err.code;
     return text.replace(/^(.*)$/gm, (_, content, offset) => {
         return (offset == 0 ? tc(title) : indent) + dc(content);
     });
@@ -124,9 +129,9 @@ export function formatError(error: ExpectedError | ActualError | undefined, titl
 export function formatFailureMessage(...failures: Failure[]): string {
     const ret: string[] = [];
     failures.forEach(failure => {
-        ret.push(`At line.${ failure.line + 1 }`);
+        ret.push(`At line.${failure.line + 1}`);
         ret.push(formatError(failure.expected, "  expected: "));
-        ret.push(formatError(failure.actual,   "  but was:  "));
+        ret.push(formatError(failure.actual, "  but was:  "));
     });
     return ret.join("\n");
 }
@@ -154,7 +159,12 @@ export class Tester {
                 const resolutionHost = { fileExists: ts.sys.fileExists, readFile: ts.sys.readFile };
                 const ret = [] as ts.ResolvedModule[];
                 moduleNames.forEach(name => {
-                    const resolved = ts.resolveModuleName(name, containingFile, compilerOptions, resolutionHost).resolvedModule;
+                    const resolved = ts.resolveModuleName(
+                        name,
+                        containingFile,
+                        compilerOptions,
+                        resolutionHost
+                    ).resolvedModule;
                     if (resolved !== undefined) {
                         ret.push(resolved);
                     }
@@ -167,13 +177,17 @@ export class Tester {
 
     public static fromConfigFile(configPath: string, sources?: string[]): Tester {
         const content = fs.readFileSync(configPath).toString();
-        const parsed = ts.parseJsonConfigFileContent(JSON.parse(content), ts.sys, path.dirname(configPath));
+        const parsed = ts.parseJsonConfigFileContent(
+            JSON.parse(content),
+            ts.sys,
+            path.dirname(configPath)
+        );
         return new Tester(parsed.options, sources || parsed.fileNames);
     }
 
     public test(fileName: string): Failure[] {
         const expectedErrors = getExpectedErrors(fileName);
-        const actualErrors = getActualErrors(fileName, this.service)
+        const actualErrors = getActualErrors(fileName, this.service);
         const failures: Failure[] = [];
         for (let i = 0; i < expectedErrors.length || i < actualErrors.length; ++i) {
             const expected = expectedErrors[i];

@@ -7,6 +7,7 @@
   "bin": "lib/cli.js",
   "scripts": {
     "build": "tsc",
+    "lint": "prettier --write \"{src,test/src}/**/*.ts\"",
     "pretest": "tsc -p test/tsconfig.json",
     "test": "ava test/dist/runner.js --verbose"
   },
@@ -20,6 +21,7 @@
     "@types/chalk": "^0.4.31",
     "@types/node": "^7.0.8",
     "ava": "^0.18.2",
+    "prettier": "1.7.4",
     "typescript": "^2.1.1"
   },
   "peerDependencies": {
@@ -33,5 +35,9 @@
     "source": [
       "test/testcases/*.*"
     ]
+  },
+  "prettier": {
+    "printWidth": 100,
+    "tabWidth": 4
   }
 }

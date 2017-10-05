@@ -1,7 +1,7 @@
 interface Foo {
     foo: string;
     bar: number;
-};
+}
 
 export const foo: Foo = {
     foo: "foo",

@@ -6,5 +6,5 @@ export const colors = {
     pass: chalk.bold.green,
     error: chalk.bold.red,
     errorTitle: chalk.gray,
-    errorDetail: chalk.yellow,
+    errorDetail: chalk.yellow
 };

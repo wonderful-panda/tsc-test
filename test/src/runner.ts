@@ -36,7 +36,7 @@ test("unexpected 1 error", t => {
 test("unexpected 2 errors", t => {
     const failures = testTsFile("unexpected-2-errors.ts");
     t.true(failures.length === 2);
-    const [ f1, f2 ] = failures;
+    const [f1, f2] = failures;
     t.true(f1.line === 10 && f1.expected === undefined);
     t.true(f1.actual !== undefined && f1.actual.code === "TS2322");
     t.true(f2.line === 12 && f2.expected === undefined);
@@ -60,7 +60,7 @@ test("expected success", t => {
 test("unexpected success", t => {
     const failures = testTsFile("unexpected-success.ts");
     t.true(failures.length === 3);
-    const [ f1, f2, f3 ] = failures;
+    const [f1, f2, f3] = failures;
     t.true(f1.line === 5);
     t.true(f1.expected !== undefined && f1.expected.code === "TS2324");
     t.true(f1.actual === undefined);
@@ -78,4 +78,3 @@ test("import modules", t => {
     const failures = testTsFile("import.ts");
     t.true(failures.length === 0);
 });
-
