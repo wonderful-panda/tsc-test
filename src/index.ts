@@ -7,7 +7,7 @@ import { colors } from "./colors";
  * Expected compilation error.
  */
 export interface ExpectedError {
-    code: string;
+    code: string[];
     message?: RegExp | string;
 }
 
@@ -42,7 +42,7 @@ function judge(
         } else {
             return undefined;
         }
-    } else if (expected.code !== actual.code) {
+    } else if (expected.code.indexOf(actual.code) < 0) {
         return { line, expected, actual, detail: "unexpected error code" };
     } else if (expected.message && actual.message) {
         if (expected.message instanceof RegExp) {
@@ -78,9 +78,10 @@ function getExpectedErrors(file: string): (ExpectedError | undefined)[] {
         .split(/\r?\n/);
     const ret: ExpectedError[] = [];
     lines.forEach((line, n) => {
-        const match = /\/\/\/\/\s*(TS[0-9]+)(?:\s*:\s*(.*))?$/.exec(line);
+        const match = /\/\/\/\/\s*(TS[0-9]+(?:\s*\|\s*TS[0-9]+)*)(?:\s*:\s*(.*))?$/.exec(line);
         if (match) {
-            ret[n] = { code: match[1], message: parseExpectedErrorMessage(match[2]) };
+            const code = match[1].split(/\s*\|\s*/);
+            ret[n] = { code, message: parseExpectedErrorMessage(match[2]) };
         }
     });
     return ret;
@@ -105,8 +106,8 @@ function getActualErrors(file: string, service: ts.LanguageService): (ActualErro
 export function formatError(
     error: ExpectedError | ActualError | undefined,
     title: string,
-    titleColor?: ((s: string) => string),
-    detailColor?: ((s: string) => string)
+    titleColor?: (s: string) => string,
+    detailColor?: (s: string) => string
 ): string {
     let indent = "                ";
     while (indent.length < title.length) {
@@ -117,7 +118,8 @@ export function formatError(
     const dc = detailColor || colors.none;
     const err = error || { code: "<no error>" };
 
-    const text = err.message ? `${err.code}: ${err.message}` : err.code;
+    const errcode = err.code instanceof Array ? err.code.join(" or ") : err.code;
+    const text = err.message ? `${errcode}: ${err.message}` : errcode;
     return text.replace(/^(.*)$/gm, (_, content, offset) => {
         return (offset == 0 ? tc(title) : indent) + dc(content);
     });

@@ -3,5 +3,5 @@ interface Foo {
 }
 
 export const foo: Foo = {
-    fooo: "foo"     //// TS0001
+    fooo: "foo"     //// TS0001|TS0002
 };

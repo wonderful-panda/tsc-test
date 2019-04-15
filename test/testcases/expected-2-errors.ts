@@ -9,4 +9,4 @@ export const foo: Foo = {
 };
 
 foo.foo = 1;        //// TS2322: Type '1' is not assignable
-foo.bar = "bar";    //// TS2322: /Type .* is not assignable/
+foo.bar = "bar";    //// TS2321 | TS2322: /Type .* is not assignable/
