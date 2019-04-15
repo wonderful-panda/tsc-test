@@ -18,21 +18,21 @@
   "author": "Iwata Hidetaka",
   "license": "MIT",
   "devDependencies": {
-    "@types/chalk": "^0.4.31",
-    "@types/node": "^7.0.8",
-    "ava": "^0.18.2",
-    "prettier": "1.7.4",
-    "typescript": "^2.1.1"
+    "@types/chalk": "^2.2.0",
+    "@types/node": "^11.13.4",
+    "ava": "^1.4.1",
+    "prettier": "1.17.0",
+    "typescript": "^3.0.0"
   },
   "peerDependencies": {
-    "typescript": ">=2.1.1"
+    "typescript": ">=2.8.0"
   },
   "dependencies": {
-    "chalk": "^1.1.3",
-    "meow": "^3.7.0"
+    "chalk": "^2.4.2",
+    "meow": "^5.0.0"
   },
   "ava": {
-    "source": [
+    "sources": [
       "test/testcases/*.*"
     ]
   },
