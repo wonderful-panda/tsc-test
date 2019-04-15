@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 import * as meow from "meow";
-import * as path from "path";
 import { Tester, Failure, formatError } from "./index";
 import { colors } from "./colors";
 
