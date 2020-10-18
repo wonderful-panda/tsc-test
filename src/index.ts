@@ -72,10 +72,7 @@ function parseExpectedErrorMessage(detail?: string): RegExp | string {
 }
 
 function getExpectedErrors(file: string): (ExpectedError | undefined)[] {
-    const lines = fs
-        .readFileSync(file)
-        .toString()
-        .split(/\r?\n/);
+    const lines = fs.readFileSync(file).toString().split(/\r?\n/);
     const ret: ExpectedError[] = [];
     lines.forEach((line, n) => {
         const match = /\/\/\/\/\s*(TS[0-9]+(?:\s*\|\s*TS[0-9]+)*)(?:\s*:\s*(.*))?$/.exec(line);
@@ -89,7 +86,7 @@ function getExpectedErrors(file: string): (ExpectedError | undefined)[] {
 
 function getActualErrors(file: string, service: ts.LanguageService): (ActualError | undefined)[] {
     const errors: ActualError[] = [];
-    service.getSemanticDiagnostics(file).forEach(d => {
+    service.getSemanticDiagnostics(file).forEach((d) => {
         let line = -1;
         if (d.file && d.start !== undefined) {
             line = d.file.getLineAndCharacterOfPosition(d.start).line;
@@ -130,7 +127,7 @@ export function formatError(
  */
 export function formatFailureMessage(...failures: Failure[]): string {
     const ret: string[] = [];
-    failures.forEach(failure => {
+    failures.forEach((failure) => {
         ret.push(`At line.${failure.line + 1}`);
         ret.push(formatError(failure.expected, "  expected: "));
         ret.push(formatError(failure.actual, "  but was:  "));
@@ -147,8 +144,8 @@ export class Tester {
     constructor(public compilerOptions: ts.CompilerOptions, public sources: string[]) {
         const host: ts.LanguageServiceHost = {
             getScriptFileNames: () => sources,
-            getScriptVersion: f => "0",
-            getScriptSnapshot: f => {
+            getScriptVersion: (f) => "0",
+            getScriptSnapshot: (f) => {
                 if (!fs.existsSync(f)) {
                     return undefined;
                 }
@@ -156,11 +153,11 @@ export class Tester {
             },
             getCurrentDirectory: () => process.cwd(),
             getCompilationSettings: () => compilerOptions,
-            getDefaultLibFileName: options => ts.getDefaultLibFilePath(options),
+            getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
             resolveModuleNames: (moduleNames, containingFile) => {
                 const resolutionHost = { fileExists: ts.sys.fileExists, readFile: ts.sys.readFile };
                 const ret = [] as ts.ResolvedModule[];
-                moduleNames.forEach(name => {
+                moduleNames.forEach((name) => {
                     const resolved = ts.resolveModuleName(
                         name,
                         containingFile,
@@ -172,7 +169,7 @@ export class Tester {
                     }
                 });
                 return ret;
-            }
+            },
         };
         this.service = ts.createLanguageService(host, ts.createDocumentRegistry());
     }
@@ -204,7 +201,7 @@ export class Tester {
 
     public testAll(cb: (fileName: string, failures: Failure[]) => void): boolean {
         let ret = true;
-        this.sources.forEach(fileName => {
+        this.sources.forEach((fileName) => {
             const failures = this.test(fileName);
             cb(fileName, failures);
             if (failures.length > 0) {

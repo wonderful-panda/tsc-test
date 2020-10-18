@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import chalk = require("chalk");
 
 export const colors = {
     none: (s: string) => s,
@@ -6,5 +6,5 @@ export const colors = {
     pass: chalk.bold.green,
     error: chalk.bold.red,
     errorTitle: chalk.gray,
-    errorDetail: chalk.yellow
+    errorDetail: chalk.yellow,
 };

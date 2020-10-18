@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as meow from "meow";
+import meow = require("meow");
 import { Tester, Failure, formatError } from "./index";
 import { colors } from "./colors";
 
@@ -17,19 +17,19 @@ const cli = meow(
       $ tsc-test -p test/tsconfig.json
 `,
     {
-        string: ["project"],
-        default: {
-            project: "tsconfig.json"
+        flags: {
+            project: {
+                type: "string",
+                default: "tsconfig.json",
+                alias: "p",
+            },
         },
-        alias: {
-            p: "project"
-        }
     }
 );
 
 function formatFailures(fileName: string, failures: Failure[]): string {
     const ret: string[] = [];
-    failures.forEach(failure => {
+    failures.forEach((failure) => {
         ret.push(colors.title(`${fileName}:${failure.line + 1}`));
         ret.push(
             formatError(failure.expected, "  expected: ", colors.errorTitle, colors.errorDetail)

@@ -19,22 +19,17 @@
   "license": "MIT",
   "devDependencies": {
     "@types/chalk": "^2.2.0",
-    "@types/node": "^11.13.4",
-    "ava": "^1.4.1",
-    "prettier": "1.17.0",
-    "typescript": "^3.0.0"
+    "@types/node": "^14.11.10",
+    "ava": "^3.13.0",
+    "prettier": "2.1.2",
+    "typescript": "^3.8.0"
   },
   "peerDependencies": {
-    "typescript": ">=2.8.0"
+    "typescript": ">=3.8.0"
   },
   "dependencies": {
-    "chalk": "^2.4.2",
-    "meow": "^5.0.0"
-  },
-  "ava": {
-    "sources": [
-      "test/testcases/*.*"
-    ]
+    "chalk": "^4.1.0",
+    "meow": "^7.1.1"
   },
   "prettier": {
     "printWidth": 100,
